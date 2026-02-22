@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Zyvark",
+    "slug": "zyvark",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "zyvark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F1923"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.rescuenow.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "RescueNow needs your location to find nearby service providers.",
+        "NSLocationAlwaysUsageDescription": "RescueNow needs your location to find nearby service providers.",
+        "NSCameraUsageDescription": "RescueNow needs camera access to take photos of issues."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F1923"
+      },
+      "package": "com.rescuenow.app",
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-image-picker",
+      "expo-secure-store"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "05854c97-0ae5-4cb4-b11c-cd5315480eca"
+      }
+    }
+  }
+}
