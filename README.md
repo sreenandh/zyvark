@@ -1,4 +1,4 @@
-# 🚨 RescueNow — Emergency Services Platform
+# 🚨 Zyvark — Emergency Services Platform
 
 A full-stack emergency services platform with real-time provider matching, live tracking, and escrow payments.
 
