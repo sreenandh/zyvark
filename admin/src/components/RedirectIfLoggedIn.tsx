@@ -1,18 +1,14 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { getAuthRole, getAuthToken } from '../utils/authStorage';
+import { roleHomePath } from '../utils/routes';
 
-/**
- * Wraps /login so that if the user is ALREADY logged in, they are
- * redirected to their home page instead of seeing the login form.
- */
 export default function RedirectIfLoggedIn({ children }: { children: React.ReactNode }) {
-    const token = localStorage.getItem('admin_token');
-    const role = localStorage.getItem('user_role');
+    const token = getAuthToken();
+    const role = getAuthRole();
 
     if (token) {
-        if (role === 'user') return <Navigate to="/book" replace />;
-        if (role === 'provider') return <Navigate to="/provider-dashboard" replace />;
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to={roleHomePath(role)} replace />;
     }
 
     return <>{children}</>;

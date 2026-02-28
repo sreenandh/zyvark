@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { clearAuth, getAuthToken } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 // Reads from VITE_API_URL in .env (fallback to localhost for dev)
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -6,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 const api = axios.create({ baseURL: API_URL, timeout: 15000 });
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('admin_token');
+    const token = getAuthToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
@@ -16,10 +18,9 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            localStorage.removeItem('admin_token');
-            localStorage.removeItem('user_role');
-            if (window.location.pathname !== '/login') {
-                window.location.href = '/login';
+            clearAuth();
+            if (window.location.pathname !== ROUTES.login) {
+                window.location.href = ROUTES.login;
             }
         }
         return Promise.reject(error);

@@ -63,6 +63,11 @@ After the server starts, call this endpoint once:
 curl -X POST http://localhost:3000/api/categories/seed
 ```
 
+Or use the local script:
+```bash
+npm run seed
+```
+
 ### Key .env Variables
 
 | Variable              | Description                    | Default         |
@@ -134,6 +139,12 @@ npm run dev
 ```
 
 Admin panel at: `http://localhost:5173`
+
+Web routes:
+- Public: `/`, `/login`
+- User: `/user/book`
+- Provider: `/provider/onboarding`, `/provider/dashboard`
+- Admin: `/admin/dashboard`, `/admin/providers`, `/admin/users`, `/admin/emergencies`, `/admin/disputes`, `/admin/settings`
 
 ### Build for Production
 

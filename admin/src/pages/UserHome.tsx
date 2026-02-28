@@ -7,6 +7,8 @@ import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import SOSLoader from '../components/SOSLoader';
 import { ProviderSkeleton } from '../components/SkeletonLoader';
+import { clearAuth } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 interface Category {
     id: string;
@@ -376,7 +378,11 @@ export default function UserHome() {
             });
 
             setTimeout(() => {
-                navigate('/dashboard');
+                setSelectedCategory(null);
+                setAnswers({});
+                setLocation(null);
+                setProviders([]);
+                setStep('category');
             }, 3000);
 
         } catch (error) {
@@ -387,7 +393,7 @@ export default function UserHome() {
     };
 
     const springTransition = {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 30
     };
@@ -413,7 +419,7 @@ export default function UserHome() {
                 {/* Premium Glass Header */}
                 <header className="px-6 py-5 flex items-center justify-between sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100/50 transition-all">
                     <div className="flex items-center gap-3">
-                        <div className="relative group cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="relative group cursor-pointer" onClick={() => navigate(ROUTES.home)}>
                             <img src="/zyvark-logo.png" alt="Zyvark" className="w-10 h-10 object-contain drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
                         </div>
                         <div>
@@ -456,7 +462,7 @@ export default function UserHome() {
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={() => { localStorage.clear(); navigate('/'); }}
+                                        onClick={() => { clearAuth(); navigate(ROUTES.home); }}
                                         className="flex-1 py-4 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition shadow-lg shadow-red-500/30"
                                     >
                                         Yes, Logout
@@ -483,27 +489,36 @@ export default function UserHome() {
                                     <p className="text-gray-500 font-medium text-lg">What help do you need today?</p>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 perspective-1000">
-                                    {categories.map((cat, idx) => {
-                                        const lowerName = cat.name.toLowerCase();
-                                        let Environment = DefaultEnvironment;
-                                        if (lowerName.includes('ac')) Environment = ACEnvironment;
-                                        else if (lowerName.includes('plumb')) Environment = PlumbingEnvironment;
-                                        else if (lowerName.includes('electric')) Environment = ElectricEnvironment;
-                                        else if (lowerName.includes('vehicle') || lowerName.includes('car')) Environment = CarEnvironment;
+                                {categories.length === 0 ? (
+                                    <div className="rounded-[2rem] border border-dashed border-gray-200 bg-white/70 p-8 text-center">
+                                        <h3 className="text-xl font-bold text-gray-900">No categories available</h3>
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            Ask an admin to seed categories from `POST /api/categories/seed`.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-4 perspective-1000">
+                                        {categories.map((cat) => {
+                                            const lowerName = cat.name.toLowerCase();
+                                            let Environment = DefaultEnvironment;
+                                            if (lowerName.includes('ac')) Environment = ACEnvironment;
+                                            else if (lowerName.includes('plumb')) Environment = PlumbingEnvironment;
+                                            else if (lowerName.includes('electric')) Environment = ElectricEnvironment;
+                                            else if (lowerName.includes('vehicle') || lowerName.includes('car')) Environment = CarEnvironment;
 
-                                        return (
-                                            <TiltCard
-                                                key={cat.id}
-                                                onClick={() => handleCategorySelect(cat)}
-                                                className="group h-56 rounded-[2rem] shadow-xl hover:shadow-2xl cursor-pointer"
-                                            >
-                                                <Environment />
-                                                <CategoryContent name={cat.name} icon={cat.icon} />
-                                            </TiltCard>
-                                        );
-                                    })}
-                                </div>
+                                            return (
+                                                <TiltCard
+                                                    key={cat.id}
+                                                    onClick={() => handleCategorySelect(cat)}
+                                                    className="group h-56 rounded-[2rem] shadow-xl hover:shadow-2xl cursor-pointer"
+                                                >
+                                                    <Environment />
+                                                    <CategoryContent name={cat.name} icon={cat.icon} />
+                                                </TiltCard>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 

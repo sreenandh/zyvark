@@ -17,6 +17,7 @@ import ProviderOnboarding from './pages/ProviderOnboarding';
 import ProviderDashboard from './pages/ProviderDashboard';
 import UserHome from './pages/UserHome';
 import Settings from './pages/Settings';
+import { ROUTES } from './utils/routes';
 import './index.css';
 
 const queryClient = new QueryClient();
@@ -26,58 +27,77 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
                 <Routes>
-                    {/* Public: Landing Page (default) - Redirects to dashboard if logged in */}
-                    <Route path="/" element={
-                        <RedirectIfLoggedIn>
-                            <Landing />
-                        </RedirectIfLoggedIn>
-                    } />
+                    <Route
+                        path={ROUTES.home}
+                        element={
+                            <RedirectIfLoggedIn>
+                                <Landing />
+                            </RedirectIfLoggedIn>
+                        }
+                    />
+                    <Route
+                        path={ROUTES.login}
+                        element={
+                            <RedirectIfLoggedIn>
+                                <Login />
+                            </RedirectIfLoggedIn>
+                        }
+                    />
 
-                    {/* Public: Login — redirects away if already logged in */}
-                    <Route path="/login" element={
-                        <RedirectIfLoggedIn>
-                            <Login />
-                        </RedirectIfLoggedIn>
-                    } />
+                    <Route
+                        path={ROUTES.providerOnboarding}
+                        element={
+                            <ProtectedRoute allowedRoles={['provider']}>
+                                <ProviderOnboarding />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path={ROUTES.providerDashboard}
+                        element={
+                            <ProtectedRoute allowedRoles={['provider']}>
+                                <ProviderDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                    {/* Provider pages (full-screen, no admin sidebar) */}
-                    <Route path="/provider-onboarding" element={
-                        <ProtectedRoute allowedRoles={['provider']}>
-                            <ProviderOnboarding />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/provider-dashboard" element={
-                        <ProtectedRoute allowedRoles={['provider']}>
-                            <ProviderDashboard />
-                        </ProtectedRoute>
-                    } />
+                    <Route
+                        path={ROUTES.userBook}
+                        element={
+                            <ProtectedRoute allowedRoles={['user']}>
+                                <UserHome />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                    {/* User booking page */}
-                    <Route path="/book" element={
-                        <ProtectedRoute allowedRoles={['user']}>
-                            <UserHome />
-                        </ProtectedRoute>
-                    } />
-
-                    {/* Admin pages (with sidebar layout) */}
-                    <Route element={
-                        <ProtectedRoute allowedRoles={['admin']}>
-                            <Layout />
-                        </ProtectedRoute>
-                    }>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/providers" element={<Providers />} />
-                        <Route path="/users" element={<Users />} />
-                        <Route path="/emergencies" element={<Emergencies />} />
-                        <Route path="/disputes" element={<Disputes />} />
-                        <Route path="/settings" element={<Settings />} />
+                    <Route
+                        path="/admin"
+                        element={
+                            <ProtectedRoute allowedRoles={['admin']}>
+                                <Layout />
+                            </ProtectedRoute>
+                        }
+                    >
+                        <Route index element={<Navigate to="dashboard" replace />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="providers" element={<Providers />} />
+                        <Route path="users" element={<Users />} />
+                        <Route path="emergencies" element={<Emergencies />} />
+                        <Route path="disputes" element={<Disputes />} />
+                        <Route path="settings" element={<Settings />} />
                     </Route>
 
-                    {/* Redirect /admin to /dashboard for backward compatibility */}
-                    <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/book" element={<Navigate to={ROUTES.userBook} replace />} />
+                    <Route path="/provider-onboarding" element={<Navigate to={ROUTES.providerOnboarding} replace />} />
+                    <Route path="/provider-dashboard" element={<Navigate to={ROUTES.providerDashboard} replace />} />
+                    <Route path="/dashboard" element={<Navigate to={ROUTES.adminDashboard} replace />} />
+                    <Route path="/providers" element={<Navigate to={ROUTES.adminProviders} replace />} />
+                    <Route path="/users" element={<Navigate to={ROUTES.adminUsers} replace />} />
+                    <Route path="/emergencies" element={<Navigate to={ROUTES.adminEmergencies} replace />} />
+                    <Route path="/disputes" element={<Navigate to={ROUTES.adminDisputes} replace />} />
+                    <Route path="/settings" element={<Navigate to={ROUTES.adminSettings} replace />} />
 
-                    {/* Catch-all: redirect to Landing instead of login */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                    <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
                 </Routes>
             </BrowserRouter>
             <Toaster

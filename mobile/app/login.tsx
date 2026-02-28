@@ -19,7 +19,7 @@ export default function LoginScreen() {
         }
         setLoading(true);
         try {
-            const res = await authAPI.sendOtp(phone);
+            const res = await authAPI.sendOtp(phone, 'user', 'login');
             // In dev mode, auto-fill OTP
             // if (res.data.otp) setOtp(res.data.otp);
             setStep('otp');
@@ -38,7 +38,7 @@ export default function LoginScreen() {
         }
         setLoading(true);
         try {
-            const res = await authAPI.verifyOtp(phone, otp);
+            const res = await authAPI.verifyOtp(phone, otp, 'user', 'login');
             await setAuth(res.data.user, res.data.accessToken);
             router.replace('/home');
         } catch (err: any) {

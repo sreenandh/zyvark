@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../services/api';
 import { CheckCircle, Upload, Briefcase, DollarSign, ChevronRight, User, FileText, ArrowLeft, Loader2, Power } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { clearAuth } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 interface Category {
     id: string;
@@ -61,7 +63,7 @@ export default function ProviderOnboarding() {
             const res = await adminAPI.getProviderProfile();
             if (res.data?.name) setName(res.data.name);
             if (res.data?.status === 'approved') {
-                navigate('/provider-dashboard');
+                navigate(ROUTES.providerDashboard);
             }
         } catch { }
     };
@@ -151,9 +153,8 @@ export default function ProviderOnboarding() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('user_role');
-        navigate('/');
+        clearAuth();
+        navigate(ROUTES.home);
     };
 
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -480,7 +481,7 @@ export default function ProviderOnboarding() {
                             </p>
 
                             <button
-                                onClick={() => navigate('/provider-dashboard')}
+                                onClick={() => navigate(ROUTES.providerDashboard)}
                                 className="w-full h-14 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition-all shadow-xl shadow-black/20"
                             >
                                 Go to Dashboard

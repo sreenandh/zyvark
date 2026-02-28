@@ -29,6 +29,19 @@ RescueNow/
 
 ---
 
+### Start Order (Use 3 Terminals)
+
+1. Terminal 1: start backend (`backend`)
+2. Terminal 2: start admin web (`admin`)
+3. Terminal 3: start mobile Expo (`mobile`)
+
+If categories are empty in the user booking UI, seed once:
+
+```bash
+cd backend
+npm run seed
+```
+
 ### 1. Backend API
 
 ```bash
@@ -138,7 +151,13 @@ VITE_API_URL=http://localhost:3000/api
 npm run dev
 ```
 
-Admin panel: `http://localhost:5173`
+Admin panel base: `http://localhost:5173`
+
+Web route map:
+- Public: `/`, `/login`
+- User: `/user/book`
+- Provider: `/provider/onboarding`, `/provider/dashboard`
+- Admin: `/admin/dashboard`, `/admin/providers`, `/admin/users`, `/admin/emergencies`, `/admin/disputes`, `/admin/settings`
 
 ---
 

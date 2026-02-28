@@ -32,8 +32,10 @@ api.interceptors.response.use(
 
 // Auth
 export const authAPI = {
-    sendOtp: (phone: string, role = 'user') => api.post('/auth/send-otp', { phone, role }),
-    verifyOtp: (phone: string, otp: string, role = 'user') => api.post('/auth/verify-otp', { phone, otp, role }),
+    sendOtp: (phone: string, role = 'user', mode: 'login' | 'register' = 'login', name?: string, email?: string) =>
+        api.post('/auth/send-otp', { phone, role, mode, name, email }),
+    verifyOtp: (phone: string, otp: string, role = 'user', mode: 'login' | 'register' = 'login') =>
+        api.post('/auth/verify-otp', { phone, otp, role, mode }),
     getMe: () => api.get('/auth/me'),
 };
 

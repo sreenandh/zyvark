@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { adminAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
+import { setAuth } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 type AuthMode = 'login' | 'register';
 
@@ -82,24 +84,21 @@ export default function Login() {
         setLoading(true);
         try {
             const res = await adminAPI.verifyOtp(phone, otp, role, authMode);
-            localStorage.setItem('admin_token', res.data.accessToken);
-
-            // Use backend-returned role (handles admin shortcut correctly)
             const actualRole = res.data.user?.role || role;
-            localStorage.setItem('user_role', actualRole);
+            setAuth(res.data.accessToken, actualRole);
 
             toast.success('Welcome back!', { icon: '🎉' });
 
             if (actualRole === 'admin') {
-                navigate('/dashboard');
+                navigate(ROUTES.adminDashboard);
             } else if (actualRole === 'provider') {
                 if (authMode === 'register' || res.data.isNewUser) {
-                    navigate('/provider-onboarding');
+                    navigate(ROUTES.providerOnboarding);
                 } else {
-                    navigate('/provider-dashboard');
+                    navigate(ROUTES.providerDashboard);
                 }
             } else {
-                navigate('/book');
+                navigate(ROUTES.userBook);
             }
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Invalid OTP');
@@ -113,7 +112,7 @@ export default function Login() {
 
             {/* Back to Home Button */}
             <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate(ROUTES.home)}
                 className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 bg-white/50 hover:bg-white backdrop-blur-md rounded-full text-gray-600 font-bold text-sm transition-all shadow-sm hover:shadow-md z-50 group"
             >
                 <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />

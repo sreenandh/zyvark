@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, UserCog, Siren, Scale, LogOut, Menu, Settings, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { clearAuth } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 const NAV_ITEMS = [
-    { path: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { path: '/providers', label: 'Providers', icon: <UserCog size={20} /> },
-    { path: '/users', label: 'Users', icon: <Users size={20} /> },
-    { path: '/emergencies', label: 'Emergencies', icon: <Siren size={20} /> },
-    { path: '/disputes', label: 'Disputes', icon: <Scale size={20} /> },
-    { path: '/settings', label: 'Settings', icon: <Settings size={20} /> },
+    { path: ROUTES.adminDashboard, label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+    { path: ROUTES.adminProviders, label: 'Providers', icon: <UserCog size={20} /> },
+    { path: ROUTES.adminUsers, label: 'Users', icon: <Users size={20} /> },
+    { path: ROUTES.adminEmergencies, label: 'Emergencies', icon: <Siren size={20} /> },
+    { path: ROUTES.adminDisputes, label: 'Disputes', icon: <Scale size={20} /> },
+    { path: ROUTES.adminSettings, label: 'Settings', icon: <Settings size={20} /> },
 ];
 
 export default function Layout() {
@@ -22,9 +24,8 @@ export default function Layout() {
     };
 
     const confirmLogout = () => {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('user_role');
-        navigate('/');
+        clearAuth();
+        navigate(ROUTES.home);
     };
 
     return (

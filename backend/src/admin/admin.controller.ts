@@ -1,6 +1,8 @@
 import { Controller, Get, Put, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { EmergenciesService } from '../emergencies/emergencies.service';
 import { ProvidersService } from '../providers/providers.service';
 import { UsersService } from '../users/users.service';
@@ -9,7 +11,8 @@ import { PaymentsService } from '../payments/payments.service';
 
 @ApiTags('admin')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@Roles('admin')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')
 export class AdminController {
     constructor(

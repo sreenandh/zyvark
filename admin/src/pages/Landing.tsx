@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Navigation, Menu, X, ArrowRight, Shield, Clock, Award, Phone, Wrench, Tv, Key, Droplet, Zap, Truck, Snowflake, User, Briefcase, ChevronRight, ArrowLeft, Home, CarFront, Siren, Globe, Facebook, Instagram, Twitter, Linkedin, Mail } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import { adminAPI } from '../services/api';
+import { setAuth } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 export default function Landing() {
     const navigate = useNavigate();
@@ -234,23 +236,18 @@ export default function Landing() {
         setLoading(true);
         try {
             const res = await adminAPI.verifyOtp(phone, otp, role, authType);
-            localStorage.setItem('admin_token', res.data.accessToken);
-
             const actualRole = res.data.user?.role || role;
-            localStorage.setItem('user_role', actualRole);
+            setAuth(res.data.accessToken, actualRole);
 
             toast.success('Welcome back!', { icon: '🎉' });
             setShowAuthModal(false);
 
-            if (actualRole === 'admin') navigate('/dashboard');
+            if (actualRole === 'admin') navigate(ROUTES.adminDashboard);
             else if (actualRole === 'provider') {
-                if (authType === 'register' || res.data.isNewUser) navigate('/provider-onboarding');
-                else navigate('/provider-dashboard');
+                if (authType === 'register' || res.data.isNewUser) navigate(ROUTES.providerOnboarding);
+                else navigate(ROUTES.providerDashboard);
             } else {
-                navigate('/book'); // Or just stay on landing page? User requested just stay? 
-                // "no no after selecting partner or custom u go to old login page i dont want that inside that modal only do everything"
-                // Assuming success leads to dashboard or booking page still.
-                // For now, I'll redirect to /book for users.
+                navigate(ROUTES.userBook);
             }
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Invalid OTP');

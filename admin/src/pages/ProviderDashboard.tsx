@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../services/api';
 import { Power, MapPin, Clock, DollarSign, CheckCircle, Navigation, User, ChevronRight, Bell, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { clearAuth } from '../utils/authStorage';
+import { ROUTES } from '../utils/routes';
 
 interface Emergency {
     id: string;
@@ -115,9 +117,8 @@ export default function ProviderDashboard() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('user_role');
-        navigate('/login');
+        clearAuth();
+        navigate(ROUTES.login);
     };
 
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
