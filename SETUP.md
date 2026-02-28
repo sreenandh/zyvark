@@ -1,233 +1,212 @@
-# RescueNow — Setup Guide
+# Zyvark Local Setup Guide
 
-## 📁 Project Structure
+This guide is the detailed reference for running backend, admin, and mobile locally.
 
+## 1) Prerequisites
+- Node.js 18+ (Node 20+ recommended)
+- npm 9+
+- PostgreSQL 14+
+- Android/iOS phone (same Wi-Fi as dev machine) for Expo Go testing
+- Expo Go app compatible with Expo SDK 54
+
+## 2) Repository Structure
+```text
+Zyvark/
+|-- backend/                  # NestJS API
+|-- admin/                    # Vite React web app
+|-- mobile/                   # Expo Router app
+|-- mobile/README_LOCAL_DEV.md
+`-- SETUP.md
 ```
-Emergeny app/
-├── backend/          → NestJS API (TypeORM + PostgreSQL)
-├── mobile/           → React Native (Expo + NativeWind)
-├── admin/            → React Admin Panel (Vite + Tailwind)
-├── PRD.md            → Product Requirements Document
-├── PROMPT.md         → Development Prompt
-└── SETUP.md          → This file
-```
 
----
+## 3) Backend Setup (`backend`)
 
-## 🔧 Prerequisites
-
-| Tool            | Version  | Install                                  |
-|-----------------|----------|------------------------------------------|
-| Node.js         | ≥ 18.x   | [nodejs.org](https://nodejs.org)         |
-| npm             | ≥ 9.x    | Comes with Node.js                       |
-| PostgreSQL      | ≥ 14.x   | [postgresql.org](https://postgresql.org) |
-| Expo CLI        | Latest   | `npm install -g expo-cli`                |
-| Expo Go (Phone) | Latest   | App Store / Play Store                   |
-
----
-
-## 1️⃣ Backend Setup (NestJS)
-
-### Local Setup
-
+### Install and configure
 ```bash
-# Navigate to backend
 cd backend
-
-# Install dependencies
 npm install
+```
 
-# Set up PostgreSQL database
-# Open pgAdmin or psql and create:
-CREATE DATABASE rescuenow_db;
+Create env file:
+```bash
+# Windows PowerShell
+Copy-Item .env.example .env
+```
 
-# Configure environment
-# Edit .env file with your PostgreSQL credentials:
-#   DB_HOST=localhost
-#   DB_PORT=5432
-#   DB_USERNAME=postgres
-#   DB_PASSWORD=your_password
-#   DB_NAME=rescuenow_db
+Create database:
+```sql
+CREATE DATABASE rescuenow;
+```
 
-# Start the server
+### Start
+```bash
 npm run start:dev
 ```
 
-The API will be available at: `http://localhost:3000/api`
-Swagger docs at: `http://localhost:3000/api/docs`
+URLs:
+- API: `http://localhost:3000/api`
+- Swagger: `http://localhost:3000/api/docs`
 
-### Seed Categories
-
-After the server starts, call this endpoint once:
-```bash
-curl -X POST http://localhost:3000/api/categories/seed
-```
-
-Or use the local script:
+### Seed categories (optional, one-time)
 ```bash
 npm run seed
 ```
 
-### Key .env Variables
+### Important backend env variables
+- `PORT=3000`
+- `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`
+- `JWT_SECRET`, `JWT_EXPIRES_IN`
+- `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+- `FIREBASE_PROJECT_ID`, `FIREBASE_PRIVATE_KEY`, `FIREBASE_CLIENT_EMAIL`
+- `UPLOAD_DIR`, `MAX_FILE_SIZE`
+- `ADMIN_PHONE`, `BACKEND_URL`
 
-| Variable              | Description                    | Default         |
-|-----------------------|--------------------------------|-----------------|
-| `PORT`                | Server port                    | `3000`          |
-| `DB_HOST`             | PostgreSQL host                | `localhost`     |
-| `DB_PORT`             | PostgreSQL port                | `5432`          |
-| `DB_USERNAME`         | Database username              | `postgres`      |
-| `DB_PASSWORD`         | Database password              | `postgres`      |
-| `DB_NAME`             | Database name                  | `rescuenow_db`  |
-| `JWT_SECRET`          | JWT signing secret             | (change this!)  |
-| `JWT_EXPIRES_IN`      | Token expiry                   | `7d`            |
-| `RAZORPAY_KEY_ID`     | Razorpay key (for payments)    | —               |
-| `RAZORPAY_KEY_SECRET` | Razorpay secret                | —               |
+## 4) Admin Setup (`admin`)
 
----
-
-## 2️⃣ Mobile App Setup (React Native + Expo)
-
-### Local Setup
-
+### Install and configure
 ```bash
-# Navigate to mobile
-cd mobile
-
-# Install dependencies
-npm install
-
-# Update API URL in services/api.ts
-# Change API_URL to your local IP:
-#   const API_URL = 'http://YOUR_LOCAL_IP:3000/api';
-# Find your IP: ipconfig (Windows) or ifconfig (Mac/Linux)
-
-# Start Expo
-npx expo start
-```
-
-### Running on Device
-
-1. Install **Expo Go** from App Store / Play Store
-2. Scan the QR code shown in terminal
-3. The app will load on your device
-
-### Running on Emulator
-
-```bash
-# Android
-npx expo start --android
-
-# iOS (Mac only)
-npx expo start --ios
-```
-
----
-
-## 3️⃣ Admin Panel Setup (React + Vite)
-
-### Local Setup
-
-```bash
-# Navigate to admin
 cd admin
-
-# Install dependencies
 npm install
+```
 
-# Start dev server
+Create env file:
+```bash
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+Default env:
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+### Start
+```bash
 npm run dev
 ```
 
-Admin panel at: `http://localhost:5173`
+URL:
+- `http://localhost:5173`
 
-Web routes:
+Current route map:
 - Public: `/`, `/login`
 - User: `/user/book`
 - Provider: `/provider/onboarding`, `/provider/dashboard`
 - Admin: `/admin/dashboard`, `/admin/providers`, `/admin/users`, `/admin/emergencies`, `/admin/disputes`, `/admin/settings`
 
-### Build for Production
+## 5) Mobile Setup (`mobile`, Expo SDK 54)
 
+### Install and configure
 ```bash
-npm run build
-# Output in admin/dist/
+cd mobile
+npm install
 ```
 
----
+Create env file:
+```bash
+# Windows PowerShell
+Copy-Item .env.example .env
+```
 
-## 🚀 Live Deployment
+Set LAN IP in `mobile/.env`:
+```env
+EXPO_PUBLIC_API_URL=http://<YOUR_PC_LAN_IP>:3000/api
+EXPO_PUBLIC_WS_URL=http://<YOUR_PC_LAN_IP>:3000
+```
 
-### Backend — Railway / Render / VPS
+Find LAN IP:
+```bash
+ipconfig
+```
 
-1. Push code to GitHub
-2. Connect to Railway/Render
-3. Set environment variables in dashboard
-4. Set build command: `npm run build`
-5. Set start command: `npm run start:prod`
-6. Add PostgreSQL addon
+Use IPv4 from active Wi-Fi adapter (for example `192.168.31.10`).
 
-### Mobile — Expo EAS
+### Start (Expo Go mode)
+```bash
+npx expo start --go --clear
+```
+
+Important:
+- Keep phone and PC on same Wi-Fi.
+- For physical device testing, do not use `localhost`.
+- Expo Go path does not require EAS build.
+- Dev-client/EAS path requires Expo login.
+
+## 6) Full Local Run Order
+Open 3 terminals:
+
+1. Backend:
+```bash
+cd backend
+npm run start:dev
+```
+
+2. Admin:
+```bash
+cd admin
+npm run dev
+```
+
+3. Mobile:
+```bash
+cd mobile
+npx expo start --go --clear
+```
+
+## 7) Troubleshooting
+
+### A) OTP fails from mobile
+1. Verify backend terminal is running without crash.
+2. Verify `mobile/.env` IP matches current `ipconfig` IPv4.
+3. From phone browser open:
+   - `http://<YOUR_PC_LAN_IP>:3000/api/categories`
+4. If not reachable, allow firewall inbound TCP 3000.
+
+### B) Mobile app shows mostly text, styles missing
+Check these files:
+- `mobile/metro.config.js` uses `withNativeWind(config, { input: "./global.css" })`
+- `mobile/global.css` has tailwind directives
+- `mobile/app/_layout.tsx` imports `../global.css`
+
+Then restart Expo:
+```bash
+npx expo start --go --clear
+```
+
+### C) Expo asks for EAS login unexpectedly
+- Stay in Expo Go mode:
+  - `npx expo start --go --clear`
+- Do not switch to dev-client/EAS flow unless needed.
+
+### D) Expo Go version mismatch error
+- The installed Expo Go app and project SDK differ.
+- Current project is SDK 54. Use compatible Expo Go.
+
+### E) Safe area warning and keep-awake warning
+- `SafeAreaView deprecated` is a warning from dependencies.
+- `Unable to activate keep awake` is often Expo Go runtime behavior.
+- If app still runs, this is usually non-blocking.
+
+## 8) Optional: Dev Client / EAS Build Flow
+Use this only when you need a custom development build.
 
 ```bash
-# Install EAS CLI
+cd mobile
 npm install -g eas-cli
-
-# Login
 eas login
-
-# Build APK
-eas build --platform android
-
-# Build iOS
-eas build --platform ios
+eas build --profile development --platform android
 ```
 
-### Admin — Vercel / Netlify
-
+Then run local server:
 ```bash
-# Vercel
-npx vercel --prod
-
-# Or Netlify
-npx netlify deploy --prod --dir=dist
+npx expo start --clear
 ```
 
----
-
-## 🗃️ Database Schema
-
-Tables are auto-created by TypeORM on first run (`synchronize: true`):
-
-- `users` — App users
-- `user_addresses` — Saved addresses
-- `providers` — Service providers
-- `provider_skills` — Provider ↔ Category mapping
-- `provider_locations` — Real-time GPS
-- `categories` — Emergency types
-- `emergencies` — Job requests (core table)
-- `payments` — Payment records
-- `reviews` — User reviews
-- `disputes` — Dispute records
-
-> ⚠️ **Production:** Set `synchronize: false` in `app.module.ts` and use TypeORM migrations.
-
----
-
-## 🔑 API Endpoints Overview
-
-| Method | Endpoint                        | Description                    |
-|--------|---------------------------------|--------------------------------|
-| POST   | `/api/auth/send-otp`            | Send OTP to phone              |
-| POST   | `/api/auth/verify-otp`          | Verify OTP, get JWT            |
-| GET    | `/api/auth/me`                  | Current user profile           |
-| GET    | `/api/categories`               | List emergency types           |
-| POST   | `/api/emergencies`              | Create emergency request       |
-| POST   | `/api/emergencies/:id/accept`   | Provider accepts job           |
-| PUT    | `/api/emergencies/:id/arrived`  | Provider arrived               |
-| PUT    | `/api/emergencies/:id/completed`| Provider marks complete        |
-| POST   | `/api/emergencies/:id/confirm`  | User confirms resolution       |
-| POST   | `/api/uploads/image`            | Upload single image            |
-| POST   | `/api/payments/create-order`    | Create Razorpay order          |
-| GET    | `/api/admin/dashboard-stats`    | Admin dashboard data           |
-
-Full Swagger docs: `http://localhost:3000/api/docs`
+## 9) Git Hygiene
+- Keep `.env` local only.
+- Commit `.env.example` files.
+- Confirm before push:
+```bash
+git status
+```
